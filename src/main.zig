@@ -46,7 +46,7 @@ const Loc = packed struct {
         };
     }
 
-    pub fn random(rnd: *std.rand.Xoshiro256, item: Item) Loc {
+    pub inline fn random(rnd: *std.rand.Xoshiro256, item: Item) Loc {
         return Loc{
             .row = rnd.random().intRangeAtMost(u6, 0, 5),
             .col = rnd.random().intRangeAtMost(u24, 0, 23),
@@ -59,8 +59,6 @@ pub fn main() !void {
     var rnd = std.rand.Xoshiro256.init(0);
     const allocator = std.heap.c_allocator;
 
-    var running: bool = true;
-
     var player = Loc{
         .row = 4,
         .col = 4,
@@ -69,7 +67,7 @@ pub fn main() !void {
 
     var box = Loc.random(&rnd, .Box);
 
-    while (running) {
+    outer: while (true) {
         while (box.row == player.row and player.col == box.col) {
             box = Loc.random(&rnd, .Box);
         }
@@ -88,6 +86,7 @@ pub fn main() !void {
                 'a' => player.move(.Left),
                 'd' => player.move(.Right),
                 's' => player.move(.Down),
+                'q' => break :outer,
                 else => void{},
             }
         }
